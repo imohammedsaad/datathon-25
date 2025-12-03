@@ -778,7 +778,7 @@
                     <p style="margin: 1rem 0 0.5rem 0; opacity: 0.95;">Problem statement will be revealed in:</p>
                     <div id="problem-countdown" style="font-size:1.6rem; font-weight:800; margin-bottom:1rem;">06:00:00</div>
                     <!-- Replace the href below with your Google Drive file link (keep the same format) -->
-                    <a id="reveal-btn" class="cta-button disabled" href="https://drive.google.com/file/d/REPLACE_WITH_FILE_ID/view?usp=sharing" target="_blank" rel="noopener noreferrer" aria-disabled="true">Reveal Problem Statement ↗️</a>
+                    <a id="reveal-btn" class="cta-button disabled" href="https://drive.google.com/file/d/1f5F707AfYnH4jTAPK--bSf4UUTzAretd/view?usp=sharing" target="_blank" rel="noopener noreferrer" aria-disabled="true">Reveal Problem Statement ↗️</a>
             </div>
         </div>
     </div>
@@ -882,7 +882,7 @@
         if (endX - startX > 50) prevBtn.click();  // swipe right
     });
         // Countdown Timer
-        const countdownDate = new Date('December 4, 2025 09:00:00').getTime();
+        const countdownDate = new Date('December 4, 2025 07:00:00').getTime();
 
         const updateCountdown = () => {
             const now = new Date().getTime();
@@ -918,53 +918,57 @@
             });
         });
 
-        /* Problem reveal countdown (6 hours) */
+        /* Problem reveal countdown (4 hours) */
         (function () {
             const REVEAL_KEY = 'problemRevealDeadline';
-            const SIX_HOURS = 6 * 60 * 60 * 1000;
+            const FOUR_HOURS = 4 * 60 * 60 * 1000; // 4 hours
             const countdownEl = document.getElementById('problem-countdown');
             const revealBtn = document.getElementById('reveal-btn');
 
             if (!countdownEl || !revealBtn) return;
+
+            // Clear old deadline to reset the timer
+            localStorage.removeItem(REVEAL_KEY);
 
             // Load or create a consistent deadline (stored per-browser)
             let deadline = localStorage.getItem(REVEAL_KEY);
             if (deadline) {
                 deadline = parseInt(deadline, 10);
             } else {
-                deadline = Date.now() + SIX_HOURS;
+                deadline = Date.now() + FOUR_HOURS;  // Change to 4 hours
                 localStorage.setItem(REVEAL_KEY, String(deadline));
             }
 
-            function updateProblemCountdown() {
-                const now = Date.now();
-                const diff = Math.max(0, deadline - now);
+    function updateProblemCountdown() {
+        const now = Date.now();
+        const diff = Math.max(0, deadline - now);
 
-                const hrs = Math.floor(diff / (1000 * 60 * 60));
-                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+        const hrs = Math.floor(diff / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
 
-                countdownEl.textContent = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        countdownEl.textContent = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 
-                if (diff <= 0) {
-                    // Reveal the button
-                    revealBtn.classList.remove('disabled');
-                    revealBtn.removeAttribute('aria-disabled');
-                    revealBtn.style.pointerEvents = 'auto';
-                    // Optionally announce
-                    countdownEl.textContent = 'Available now';
-                    clearInterval(problemInterval);
-                }
-            }
+        if (diff <= 0) {
+            // Reveal the button
+            revealBtn.classList.remove('disabled');
+            revealBtn.removeAttribute('aria-disabled');
+            revealBtn.style.pointerEvents = 'auto';
+            // Optionally announce
+            countdownEl.textContent = 'Available now';
+            clearInterval(problemInterval);
+        }
+    }
 
-            // Ensure the button starts disabled
-            revealBtn.classList.add('disabled');
-            revealBtn.setAttribute('aria-disabled', 'true');
-            revealBtn.style.pointerEvents = 'none';
+    // Ensure the button starts disabled
+    revealBtn.classList.add('disabled');
+    revealBtn.setAttribute('aria-disabled', 'true');
+    revealBtn.style.pointerEvents = 'none';
 
-            updateProblemCountdown();
-            const problemInterval = setInterval(updateProblemCountdown, 1000);
-        })();
+    updateProblemCountdown();
+    const problemInterval = setInterval(updateProblemCountdown, 1000);
+})();
+
     </script>
 </body>
 </html>
