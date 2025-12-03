@@ -296,6 +296,22 @@
             box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
         }
 
+        /* Disabled state for CTA used by problem reveal button */
+        .cta-button.disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            filter: grayscale(10%);
+            pointer-events: none;
+        }
+
+        /* Center the content for the Problem Reveal section only */
+        .problem-section .circular-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
         .scroll-indicator {
             position: absolute;
             bottom: 2rem;
@@ -751,6 +767,22 @@
             </div>
         </div>
     </div>
+    <!-- Problem Statement Section -->
+    <div class="problem-section container" id="problem" style="align-items: center;">
+        <h2 class="section-title">Problem Statement</h2>
+
+        <div class="circular-section">
+            <div class="circular-content">
+                <h2>🔍 Problem Reveal</h2>
+                <p>Click the button below to view the problem statement on Google Drive. The button opens the document in a new tab.</p>
+                    <p style="margin: 1rem 0 0.5rem 0; opacity: 0.95;">Problem statement will be revealed in:</p>
+                    <div id="problem-countdown" style="font-size:1.6rem; font-weight:800; margin-bottom:1rem;">06:00:00</div>
+                    <!-- Replace the href below with your Google Drive file link (keep the same format) -->
+                    <a id="reveal-btn" class="cta-button disabled" href="https://drive.google.com/file/d/REPLACE_WITH_FILE_ID/view?usp=sharing" target="_blank" rel="noopener noreferrer" aria-disabled="true">Reveal Problem Statement ↗️</a>
+            </div>
+        </div>
+    </div>
+
     <!-- Contact Us Section -->
 <div class="contact-section" id="contact">
     <h2 class="section-title">Contact Us</h2>
@@ -885,6 +917,54 @@
                 }
             });
         });
+
+        /* Problem reveal countdown (6 hours) */
+        (function () {
+            const REVEAL_KEY = 'problemRevealDeadline';
+            const SIX_HOURS = 6 * 60 * 60 * 1000;
+            const countdownEl = document.getElementById('problem-countdown');
+            const revealBtn = document.getElementById('reveal-btn');
+
+            if (!countdownEl || !revealBtn) return;
+
+            // Load or create a consistent deadline (stored per-browser)
+            let deadline = localStorage.getItem(REVEAL_KEY);
+            if (deadline) {
+                deadline = parseInt(deadline, 10);
+            } else {
+                deadline = Date.now() + SIX_HOURS;
+                localStorage.setItem(REVEAL_KEY, String(deadline));
+            }
+
+            function updateProblemCountdown() {
+                const now = Date.now();
+                const diff = Math.max(0, deadline - now);
+
+                const hrs = Math.floor(diff / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                countdownEl.textContent = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+                if (diff <= 0) {
+                    // Reveal the button
+                    revealBtn.classList.remove('disabled');
+                    revealBtn.removeAttribute('aria-disabled');
+                    revealBtn.style.pointerEvents = 'auto';
+                    // Optionally announce
+                    countdownEl.textContent = 'Available now';
+                    clearInterval(problemInterval);
+                }
+            }
+
+            // Ensure the button starts disabled
+            revealBtn.classList.add('disabled');
+            revealBtn.setAttribute('aria-disabled', 'true');
+            revealBtn.style.pointerEvents = 'none';
+
+            updateProblemCountdown();
+            const problemInterval = setInterval(updateProblemCountdown, 1000);
+        })();
     </script>
 </body>
 </html>
