@@ -311,6 +311,13 @@
             align-items: center;
             text-align: center;
         }
+        /* Center the content for the Dataset Reveal section */
+        .dataset-section .circular-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
 
         .scroll-indicator {
             position: absolute;
@@ -775,14 +782,31 @@
             <div class="circular-content">
                 <h2>🔍 Problem Reveal</h2>
                 <p>Click the button below to view the problem statement on Google Drive. The button opens the document in a new tab.</p>
-                    <p style="margin: 1rem 0 0.5rem 0; opacity: 0.95;">Problem statement will be revealed in:</p>
-                    <div id="problem-countdown" style="font-size:1.6rem; font-weight:800; margin-bottom:1rem;">06:00:00</div>
+                    <p style="margin: 1rem 0 0.5rem 0; opacity: 0.95;">Problem statement revealed!</p>
+                    <!-- <div id="problem-countdown" style="font-size:1.6rem; font-weight:800; margin-bottom:1rem;">06:00:00</div> -->
                     <!-- Replace the href below with your Google Drive file link (keep the same format) -->
-                    <a id="reveal-btn" class="cta-button disabled" href="https://drive.google.com/file/d/1f5F707AfYnH4jTAPK--bSf4UUTzAretd/view?usp=sharing" target="_blank" rel="noopener noreferrer" aria-disabled="true">Reveal Problem Statement ↗️</a>
+                    <a id="reveal-btn" class="cta-button" href="https://drive.google.com/file/d/1f5F707AfYnH4jTAPK--bSf4UUTzAretd/view?usp=sharing" target="_blank" rel="noopener noreferrer" aria-disabled="true">View Problem Statement ↗️</a>
             </div>
         </div>
     </div>
 
+    <!-- DATASET REVEAL SECTION -->
+    <div class="dataset-section container" id="dataset">
+        <h2 class="section-title">DATASET REVEAL</h2>
+
+        <div class="circular-section">
+            <div class="circular-content">
+                <h2>📦 Dataset Reveal</h2>
+                <p>The dataset (ZIP) will be available at the time shown below. The reveal button opens the Drive folder in a new tab.</p>
+                <p style="margin: 1rem 0 0.5rem 0; opacity: 0.95;">Dataset will be revealed in:</p>
+                <div id="dataset-countdown" style="font-size:1.6rem; font-weight:800; margin-bottom:1rem;">--:--:--</div>
+                <!-- Replace the href below with your Google Drive folder or zip link -->
+                <a id="dataset-reveal-btn" class="cta-button disabled" href="https://drive.google.com/file/d/1qwiJOFvr1YDul5XQVw48VpeJ6xT2BWGF/view?usp=sharing" target="_blank" rel="noopener noreferrer" aria-disabled="true">Reveal Dataset ↗️</a>
+            </div>
+        </div>
+    </div>
+
+    
     <!-- Contact Us Section -->
 <div class="contact-section" id="contact">
     <h2 class="section-title">Contact Us</h2>
@@ -819,7 +843,6 @@
 
     </div>
 </div>
-
 
     <script>
     const track = document.querySelector('.carousel-track');
@@ -957,7 +980,47 @@
 
             updateProblemCountdown();
             const problemInterval = setInterval(updateProblemCountdown, 1000);
-        })();
+            })();
+
+            /* Dataset reveal countdown (fixed to 9:30 AM today) */
+            (function () {
+                const countdownEl = document.getElementById('dataset-countdown');
+                const revealBtn = document.getElementById('dataset-reveal-btn');
+
+                if (!countdownEl || !revealBtn) return;
+
+                // Fixed deadline: 9:30 AM today
+                const today = new Date();
+                const deadline = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 30, 0).getTime();
+
+                function updateDatasetCountdown() {
+                    const now = Date.now();
+                    const diff = Math.max(0, deadline - now);
+
+                    const hrs = Math.floor(diff / (1000 * 60 * 60));
+                    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                    countdownEl.textContent = `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+                    if (diff <= 0) {
+                        // Reveal the button
+                        revealBtn.classList.remove('disabled');
+                        revealBtn.removeAttribute('aria-disabled');
+                        revealBtn.style.pointerEvents = 'auto';
+                        countdownEl.textContent = 'Available now';
+                        clearInterval(datasetInterval);
+                    }
+                }
+
+                // Ensure the button starts disabled
+                revealBtn.classList.add('disabled');
+                revealBtn.setAttribute('aria-disabled', 'true');
+                revealBtn.style.pointerEvents = 'none';
+
+                updateDatasetCountdown();
+                const datasetInterval = setInterval(updateDatasetCountdown, 1000);
+            })();
 
     </script>
 </body>
